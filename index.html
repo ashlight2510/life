@@ -198,11 +198,29 @@
       font-size: 11px;
       opacity: 0.4;
     }
+    .ad-container {
+      margin: 16px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 250px;
+    }
+    .ad-container.horizontal {
+      min-height: 90px;
+    }
   </style>
 </head>
 <body>
   <h1>⏰ 인생 남은 시간 대시보드</h1>
   <div class="subtitle">밈 버전으로 보는 나의 진짜 자유시간 & "어디서 새고 있는지" 리포트</div>
+
+  <!-- 광고 영역 1: 상단 -->
+  <div class="ad-container horizontal">
+    <ins class="kakao_ad_area" style="display:none;"
+      data-ad-unit="DAN-5s3kxAO1pWzOd2MW"
+      data-ad-width="728"
+      data-ad-height="90"></ins>
+  </div>
 
   <div class="layout">
     <!-- 입력 카드 -->
@@ -258,7 +276,26 @@
     </div>
   </div>
 
+  <!-- 광고 영역 2: 중간 -->
+  <div class="ad-container">
+    <ins class="kakao_ad_area" style="display:none;"
+      data-ad-unit="DAN-5s3kxAO1pWzOd2MW"
+      data-ad-width="300"
+      data-ad-height="250"></ins>
+  </div>
+
+  <!-- 광고 영역 3: 하단 -->
+  <div class="ad-container horizontal">
+    <ins class="kakao_ad_area" style="display:none;"
+      data-ad-unit="DAN-5s3kxAO1pWzOd2MW"
+      data-ad-width="728"
+      data-ad-height="90"></ins>
+  </div>
+
   <footer>© 2025 인생 남은 시간 대시보드 (밈 버전)</footer>
+
+  <!-- 카카오 광고 스크립트 -->
+  <script type="text/javascript" src="//t1.daumcdn.net/kas/static/ba.min.js" async></script>
 
   <script>
     function formatHours(num) {
@@ -358,7 +395,7 @@
       });
 
       memeFooterEl.innerText =
-        ""25살 배달비 → 자유시간 -0.1시간" 같은 느낌으로, 어디서 새고 있는지 감 잡아보는 용도입니다. 그 작은 기쁨이라도 뺏지 말고, 그냥 가끔만 줄여봅시다. 😇";
+        "\"25살 배달비 → 자유시간 -0.1시간\" 같은 느낌으로, 어디서 새고 있는지 감 잡아보는 용도입니다. 그 작은 기쁨이라도 뺏지 말고, 그냥 가끔만 줄여봅시다. 😇";
 
       resultCard.style.display = "block";
     }
