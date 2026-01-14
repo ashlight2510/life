@@ -193,6 +193,43 @@
       font-size: 11px;
       opacity: 0.55;
     }
+    .lang-switch {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      display: inline-flex;
+      gap: 0;
+      padding: 3px;
+      border-radius: 999px;
+      background: rgba(10, 10, 18, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      border: 1px solid rgba(125, 139, 255, 0.2);
+    }
+    .lang-switch button {
+      border: none;
+      background: transparent;
+      color: rgba(247, 247, 247, 0.6);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 44px;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    .lang-switch button.active {
+      background: rgba(125, 139, 255, 0.3);
+      color: #f7f7f7;
+      box-shadow: 0 2px 8px rgba(125, 139, 255, 0.4);
+    }
+    .lang-switch button:not(.active):hover {
+      background: rgba(125, 139, 255, 0.1);
+      color: rgba(247, 247, 247, 0.9);
+    }
     footer {
       margin-top: 26px;
       font-size: 11px;
@@ -249,8 +286,13 @@
 }
   </style>
 </head>
-<body><h1>⏰ 인생 남은 시간 대시보드</h1>
-  <div class="subtitle">밈 버전으로 보는 나의 진짜 자유시간 & "어디서 새고 있는지" 리포트</div>
+<body>
+  <div class="lang-switch" role="tablist" aria-label="Language switcher">
+    <button type="button" data-lang="ko" class="active">KR</button>
+    <button type="button" data-lang="en">EN</button>
+  </div>
+  <h1 data-i18n="title">⏰ 인생 남은 시간 대시보드</h1>
+  <div class="subtitle" data-i18n="subtitle">밈 버전으로 보는 나의 진짜 자유시간 & "어디서 새고 있는지" 리포트</div>
 
   <div class="layout">
     <!-- 입력 카드 -->
@@ -269,7 +311,7 @@
       <input type="number" id="work" placeholder="예: 9" min="0" max="24" step="0.1" />
       <div class="hint">출퇴근 포함 "일 때문에 묶여 있는" 총 시간 느낌대로</div>
 
-      <button onclick="calculate()">내 자유시간 계산하기</button>
+      <button onclick="calculate()" data-i18n="calculateBtn">내 자유시간 계산하기</button>
 
       <div class="small-note">
         * 정확한 재무/생애설계 도구가 아니라, 현실 자각 + 현웃용 밈 대시보드입니다.
@@ -297,7 +339,7 @@
         <div class="meme-footer" id="memeFooter"></div>
       </div>
 
-      <button class="copy-btn" style="color: #fff;" onclick="copyResult()">
+      <button class="copy-btn" style="color: #fff;" onclick="copyResult()" data-i18n="copyBtn">
         📋 이 결과 카톡에 자랑하기
       </button>
       <div class="small-note">
@@ -310,10 +352,99 @@
   <div class="ad-container">
     </div>
 
-  <footer>© 2025 인생 남은 시간 대시보드 (밈 버전)</footer>
+  <footer data-i18n="footer">© 2025 인생 남은 시간 대시보드 (밈 버전)</footer>
 
   <!-- 카카오 광고 스크립트 -->
   <script>
+    /* i18n */
+    const translations = {
+      ko: {
+        metaTitle: "⏰ 인생 남은 시간 대시보드 (밈 버전)",
+        title: "⏰ 인생 남은 시간 대시보드",
+        subtitle: "밈 버전으로 보는 나의 진짜 자유시간 & \"어디서 새고 있는지\" 리포트",
+        calculateBtn: "내 자유시간 계산하기",
+        copyBtn: "📋 이 결과 카톡에 자랑하기",
+        footer: "© 2025 인생 남은 시간 대시보드 (밈 버전)",
+        alertCopySuccess: "결과 문구가 클립보드에 복사되었습니다!",
+        alertCopyFail: "복사에 실패했어요. 직접 드래그해서 복사해주세요!"
+      },
+      en: {
+        metaTitle: "⏰ Life Remaining Time Dashboard (Meme Version)",
+        title: "⏰ Life Remaining Time Dashboard",
+        subtitle: "My real free time & \"where it's leaking\" report in meme version",
+        calculateBtn: "Calculate My Free Time",
+        copyBtn: "📋 Share this result",
+        footer: "© 2025 Life Remaining Time Dashboard (Meme Version)",
+        alertCopySuccess: "Result text has been copied to clipboard!",
+        alertCopyFail: "Copy failed. Please manually select and copy!"
+      }
+    };
+    const defaultLang = "en";
+    const supportedLangs = ["ko", "en"];
+    let currentLang = defaultLang;
+    function t(key, vars = {}) {
+      const langTable = translations[currentLang] || translations.ko;
+      const template = langTable?.[key] ?? translations.ko?.[key] ?? key;
+      if (typeof template !== "string") return template;
+      return template.replace(/\{(\w+)\}/g, (_, token) =>
+        vars[token] !== undefined ? vars[token] : `{${token}}`
+      );
+    }
+    function applyTranslations() {
+      document.title = t("metaTitle");
+      document.documentElement.lang = currentLang;
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        el.textContent = t(el.dataset.i18n);
+      });
+    }
+    function setLang(lang, options = {}) {
+      const nextLang = translations[lang] ? lang : defaultLang;
+      currentLang = nextLang;
+      document.documentElement.lang = nextLang;
+      localStorage.setItem("preferredLang", nextLang);
+      document.querySelectorAll(".lang-switch button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.lang === nextLang);
+      });
+      applyTranslations();
+      if (options.updateUrl) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("lang", nextLang);
+        window.history.replaceState({}, "", url);
+      }
+    }
+    function getRegionPreferredLang(fallback = defaultLang) {
+      const intlLocale =
+        typeof Intl === "object" && typeof Intl.DateTimeFormat === "function"
+          ? Intl.DateTimeFormat().resolvedOptions().locale
+          : "";
+      const sources = [
+        ...(navigator.languages || []),
+        navigator.language,
+        navigator.userLanguage,
+        intlLocale,
+      ]
+        .filter(Boolean)
+        .map((locale) => locale.toLowerCase());
+      const hasKorean = sources.some((locale) => locale.startsWith("ko"));
+      return hasKorean ? "ko" : fallback;
+    }
+
+    function detectLang() {
+      const params = new URLSearchParams(window.location.search);
+      const paramLang = params.get("lang");
+      if (supportedLangs.includes(paramLang)) return paramLang;
+      const stored = localStorage.getItem("preferredLang");
+      if (supportedLangs.includes(stored)) return stored;
+      const candidate = getRegionPreferredLang(defaultLang);
+      return supportedLangs.includes(candidate) ? candidate : defaultLang;
+    }
+    document.querySelectorAll(".lang-switch button").forEach((button) => {
+      button.addEventListener("click", () => {
+        setLang(button.dataset.lang, { updateUrl: true });
+      });
+    });
+    setLang(detectLang(), { updateUrl: false });
+
     function formatHours(num) {
       return num.toFixed(1).replace(/\.0$/, "") + "시간";
     }
@@ -438,10 +569,10 @@
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          alert("결과 문구가 클립보드에 복사되었습니다!");
+          alert(t("alertCopySuccess"));
         })
         .catch(() => {
-          alert("복사에 실패했어요. 직접 드래그해서 복사해주세요!");
+          alert(t("alertCopyFail"));
         });
     }
   </script>
@@ -490,4 +621,3 @@
   
 </body>
 </html>
-
